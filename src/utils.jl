@@ -14,7 +14,7 @@ n_l: Number of lattice sites
 χ: Bond dimension
 mmax: Number of local states
 """
-function system_dim(Γlist)
+function system_dim(Γlist::Vector{})
     n_l=length(Γlist)
     χ=size(Γlist[1])[3]
     mmax=size(Γlist[1])[1]
@@ -25,7 +25,7 @@ end
 """
 Generate zero tensors for given MPS dimensions in a generic form
 """
-function emptymps_generic(n_l,χ,mmax)
+function emptymps_generic(n_l::Int,χ::Int,mmax::Int)
     Mlist=[ci==1 ? zeros(ComplexF64,mmax,1,χ) : (ci==n_l ? zeros(ComplexF64,mmax,χ,1) : zeros(ComplexF64,mmax,χ,χ)) for ci in 1:n_l]
     return Mlist
 end
@@ -33,7 +33,7 @@ end
 """
 Generate zero tensors for given MPS dimensions in a ΓΛ-form
 """
-function emptymps_ΓΛ(n_l,χ,mmax)
+function emptymps_ΓΛ(n_l::Int,χ::Int,mmax::Int)
     λlist=[zeros(Float64,χ) for i in 1:n_l-1]
     Γlist=[i==1 ? zeros(ComplexF64,mmax,1,χ) : (i==n_l ? zeros(ComplexF64,mmax,χ,1) : zeros(ComplexF64,mmax,χ,χ)) for i in 1:n_l]
     return Γlist,λlist
@@ -42,7 +42,7 @@ end
 """
 Generate zero tensors of an MPO
 """
-function emptympo(n_l,χ,mmax)
+function emptympo(n_l::Int,χ::Int,mmax::Int)
     Olist=[ci==1 ? zeros(ComplexF64,mmax,mmax,1,χ) : (ci==n_l ? zeros(ComplexF64,mmax,mmax,χ,1) : zeros(ComplexF64,mmax,mmax,χ,χ)) for ci in 1:n_l]
     return Olist
 end
@@ -50,7 +50,7 @@ end
 """
 Transform a given MPS with ΓΛ-form into a generic form
 """
-function generic_form(Γlist,λlist)
+function generic_form(Γlist::Vector{},λlist::Vector{})
     n_l,χ,mmax=system_dim(Γlist)    
     Mlist=emptymps_generic(n_l,χ,mmax)
     
@@ -64,9 +64,9 @@ function generic_form(Γlist,λlist)
 end
 
 """
-Transform a generic MPS into a right-normalized form
+Transform a generic MPS into a right-normalized form 
 """
-function right_normalize(Mlist;normalize=true)
+function right_normalize(Mlist::Vector{};normalize=true)
     n_l,χ,mmax=system_dim(Mlist)
 
     Blist=emptymps_generic(n_l,χ,mmax)
@@ -129,7 +129,7 @@ end
 """
 Transform a generic MPS into a ΓΛ-normalized form
 """
-function ΓΛ_formalize(Blist;threshold=1e-10)
+function ΓΛ_formalize(Blist::Vector{};threshold=1e-10)
     n_l,χ,mmax=system_dim(Blist)
     
     Γlist,λlist=emptymps_ΓΛ(n_l,χ,mmax)
@@ -173,7 +173,7 @@ end
 """
 Reshape the dimensionality of the MPS
 """
-function reshape_dims(Γlist,λlist,χ_target,mmax_target)
+function reshape_dims(Γlist::Vector{},λlist::Vector{},χ_target::Int,mmax_target::Int)
     n_l,χ_current,mmax_current=system_dim(Γlist)
     
     Γlist_t,λlist_t=emptymps_ΓΛ(n_l,χ_target,mmax_target)
